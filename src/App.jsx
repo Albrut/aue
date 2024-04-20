@@ -1,5 +1,5 @@
 
-import './App.css'
+// import './App.css'
 import LoginSignUp from './components/LoginSignUp/LoginSignUp'
 
 function App() {
@@ -8,6 +8,7 @@ function App() {
     <div>
       <LoginSignUp/>
     </div>
+    
   )
 }
 

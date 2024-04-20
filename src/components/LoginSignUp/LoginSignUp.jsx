@@ -1,72 +1,87 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Assuming you use Axios for API calls
+import axios from 'axios';
+import './style.css';
 
 function LoginSignUp() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Added for signup
-  const [isLogin, setIsLogin] = useState(true); // State to toggle between login and signup
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
 
     if (!isLogin && password !== confirmPassword) {
-      console.error('Passwords do not match!');
-      return; // Exit function if passwords don't match
+      alert('Passwords do not match!');
+      return;
     }
 
     try {
-      const url = isLogin ? '/api/login' : '/api/register'; // Dynamic URL based on mode
+      const url = isLogin ? '/api/login' : '/api/register';
       const response = await axios.post(url, {
         username,
         password,
       });
 
-      const { token } = response.data; // Assuming response contains a token
+      const { token } = response.data;
 
-      localStorage.setItem('jwtToken', token); // Store token in local storage
+      localStorage.setItem('jwtToken', token);
 
-      console.log(`${isLogin ? 'Login' : 'Registration'} successful!`); // Message based on mode
-
-      // Redirect or handle successful login/registration here
+      alert(`${isLogin ? 'Login' : 'Registration'} successful!`);
     } catch (error) {
-      console.error(error); // Handle errors
+      console.error(error);
+      alert('An error occurred. Please try again.'); // User-friendly error message
     }
   };
 
   const handleModeSwitch = () => {
-    setIsLogin(!isLogin); // Toggle login/signup mode
-    setConfirmPassword(''); // Clear confirm password on mode switch
+    setIsLogin(!isLogin);
+    setConfirmPassword('');
   };
 
   return (
-    <div className='container'>
-      {/* Login/Signup form based on state */}
-      <form onSubmit={handleFormSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type={isLogin ? 'password' : 'text'} // Password for login, text for signup
-          placeholder={isLogin ? 'Password' : 'Password'}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {!isLogin && ( // Only show confirm password input for signup
+    <div className="container">
+      <form onSubmit={handleFormSubmit} className={isLogin ? 'login' : 'signup'}>
+        <div className="field">
+          <input
+            type="text"
+            placeholder="Email Address"
+            required
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="field">
           <input
             type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Password"
+            required
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
+        </div>
+        {!isLogin && (
+          <div className="field">
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              required
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
         )}
-        <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
-        <span onClick={handleModeSwitch}>
-          {isLogin ? 'New User? Sign Up' : 'Existing User? Login'}
-        </span>
+        <div className="field btn">
+          <div className="btn-layer"></div>
+          <input type="submit" value={isLogin ? 'Login' : 'SignUp'} />
+        </div>
+        <div className="signup-link">
+          {isLogin ? "Don't Have Account? " : "Already have an account? "}
+          <span onClick={handleModeSwitch}>{isLogin ? 'Sign Up' : 'Login'}</span>
+        </div>
       </form>
     </div>
   );
