@@ -3,7 +3,7 @@ import axios from 'axios';
 import './style.css';
 
 function LoginSignUp() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
@@ -12,25 +12,26 @@ function LoginSignUp() {
     e.preventDefault();
 
     if (!isLogin && password !== confirmPassword) {
-      alert('Passwords do not match!');
+      console.error('Passwords do not match!');
       return;
     }
 
     try {
-      const url = isLogin ? '/api/login' : '/api/register';
+      const url = isLogin ? '/api/login' : 'http://localhost:8086/register';
       const response = await axios.post(url, {
-        username,
+        email,
         password,
       });
 
-      const { token } = response.data;
+      console.log(response.data);
 
-      localStorage.setItem('jwtToken', token);
+      const { access_token } = response.data;
 
-      alert(`${isLogin ? 'Login' : 'Registration'} successful!`);
+      localStorage.setItem('jwtToken', access_token);
+
+      console.log(`${isLogin ? 'Login' : 'Registration'} successful!`);
     } catch (error) {
       console.error(error);
-      alert('An error occurred. Please try again.'); // User-friendly error message
     }
   };
 
@@ -47,9 +48,8 @@ function LoginSignUp() {
             type="text"
             placeholder="Email Address"
             required
-            name="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="field">
@@ -57,7 +57,6 @@ function LoginSignUp() {
             type="password"
             placeholder="Password"
             required
-            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -68,7 +67,6 @@ function LoginSignUp() {
               type="password"
               placeholder="Confirm Password"
               required
-              name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
