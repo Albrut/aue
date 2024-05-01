@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './style.css';
+import { useNavigate } from 'react-router-dom';
 
-function LoginSignUp() {
+export function LoginSignUp() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,19 +19,26 @@ function LoginSignUp() {
     }
 
     try {
-      const url = isLogin ? '/api/login' : 'http://localhost:8086/register';
-      const response = await axios.post(url, {
-        email,
-        password,
-      });
+      const registrationUrl = 'http://localhost:8086/register';
+      const loginUrl = '/api/login';
 
-      console.log(response.data);
-
-      const { access_token } = response.data;
-
-      localStorage.setItem('jwtToken', access_token);
+      // Регистрация или вход пользователя
+      const url = isLogin ? loginUrl : registrationUrl;
+      await axios.post(url, { email, password });
 
       console.log(`${isLogin ? 'Login' : 'Registration'} successful!`);
+
+      if (!isLogin) {
+        // Переход на страницу выбора уровня только после регистрации
+        navigate('/lang-level');
+
+        // Сохранение логина и пароля при регистрации
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
+      } else {
+        // Переход на страницу профиля
+        navigate('/profile');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -74,7 +83,7 @@ function LoginSignUp() {
         )}
         <div className="field btn">
           <div className="btn-layer"></div>
-          <input type="submit" value={isLogin ? 'Login' : 'SignUp'} />
+          <input type="submit" value={isLogin ? 'Login' : 'Sign Up'} />
         </div>
         <div className="signup-link">
           {isLogin ? "Don't Have Account? " : "Already have an account? "}
@@ -84,5 +93,3 @@ function LoginSignUp() {
     </div>
   );
 }
-
-export default LoginSignUp;
